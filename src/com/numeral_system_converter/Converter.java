@@ -10,9 +10,10 @@ public class Converter {
     private final Scanner scan = new Scanner(System.in);
 
     public void goConvert() {
-        sourceRadix = Integer.parseInt(scan.nextLine());
-        sourceNumber = scan.nextLine();
-        targetRadix = Integer.parseInt(scan.nextLine());
+        boolean ok = enterValues();
+        if (!ok) {
+            return;
+        }
         double decimalNumber = 0.0;
         //translate the sourceRadix to decimalRadix (work with sourceNumber)
         if (sourceRadix == 10) {
@@ -28,6 +29,43 @@ public class Converter {
         System.out.println(translateToTargetRadix(decimalNumber));
     }
 
+    public boolean enterValues() {
+        //enter and check sourceRadix
+        String sRadix = scan.nextLine();
+        if (sRadix.matches("[0-9]+") && Integer.parseInt(sRadix) < 37 && Integer.parseInt(sRadix) > 0) {
+            sourceRadix = Integer.parseInt(sRadix);
+        } else {
+            System.out.println("error");
+            return false;
+        }
+        //enter and check sourceNumber
+        sourceNumber = scan.nextLine().toLowerCase();
+        if (!sourceNumber.matches("[0-9a-z]+\\.?[0-9a-z]*")) {
+            System.out.println("error");
+            return false;
+        }
+        for (int i = 0; i < sourceNumber.length(); i++) {
+            if (sourceNumber.charAt(i) <= '9' && !String.valueOf(sourceNumber.charAt(i)).matches("\\.")) {
+                if (Integer.parseInt(String.valueOf(sourceNumber.charAt(i))) > sourceRadix) {
+                    System.out.println("error");
+                    return false;
+                }
+            }else if (sourceNumber.charAt(i) > '9' && !String.valueOf(sourceNumber.charAt(i)).matches("\\.")) {
+                if (Integer.parseInt(String.valueOf(sourceNumber.charAt(i) - 87)) >= sourceRadix) {
+                    System.out.println("error");
+                    return false;
+                }
+            }
+        }
+        String tRadix = scan.nextLine();
+        if (tRadix.matches("[0-9]+") && Integer.parseInt(tRadix) > 0 && Integer.parseInt(tRadix) < 37) {
+            targetRadix = Integer.parseInt(tRadix);
+        } else {
+            System.out.println("error");
+            return false;
+        }
+        return true;
+    }
     public double translateToDecimalRadix() {
         if (sourceNumber.matches("[0-9a-z]*\\.[0-9a-z]*")) {
             String[] wholeAndFraction = sourceNumber.toLowerCase().split("\\.");
